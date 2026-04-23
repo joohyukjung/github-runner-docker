@@ -1,0 +1,27 @@
+name: github-runner-dev
+
+services:
+  github-runner:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: github-runner-custom
+    restart: unless-stopped
+    environment:
+      # 근거: GitHub Repository 또는 Organization 연결을 위한 필수 환경 변수
+      - REPO_URL=https://github.com/joohyukjung/devops
+      - ACCESS_TOKEN=${ACCESS_TOKEN}
+      - RUNNER_NAME=oci-a1-runner
+      - RUNNER_WORKDIR=/tmp/runner/work
+    volumes:
+      # 근거: Docker-out-of-Docker (DooD) 구성을 위한 호스트 소켓 마운트
+      - /var/run/docker.sock:/var/run/docker.sock
+      # 워크스페이스 영속성을 위한 볼륨 마운트
+      - runner-data:/tmp/runner/work
+    deploy:
+      resources:
+        limits:
+          memory: 4G
+
+volumes:
+  runner-data:
